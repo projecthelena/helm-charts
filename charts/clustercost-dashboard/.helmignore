@@ -1,0 +1,15 @@
+# Common VCS files
+.git/
+.gitignore
+
+# Editors
+.vscode/
+.idea/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Tests / docs not needed in packages
+ci/
+docs/

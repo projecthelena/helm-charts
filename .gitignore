@@ -1,0 +1,17 @@
+# General
+.DS_Store
+Thumbs.db
+
+# Editor directories
+.idea/
+.vscode/
+
+# Node and dependency artifacts
+node_modules/
+
+# Helm / packaging artifacts
+charts/**/Chart.lock
+charts/**/charts/
+charts/**/tmp/
+charts/**/.helmcache/
+charts/**/.helm/

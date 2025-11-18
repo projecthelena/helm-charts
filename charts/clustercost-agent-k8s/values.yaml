@@ -1,0 +1,64 @@
+replicaCount: 1
+
+image:
+  repository: jesuspaz/clustercost-agent-k8s
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+  annotations: {}
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+nodeSelector: {}
+affinity: {}
+tolerations: []
+
+priorityClassName: ""
+
+podLabels: {}
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+
+extraEnv: []
+extraEnvFrom: []
+extraArgs: []
+
+pricing:
+  provider: aws
+  region: us-east-1
+  cpuHourPrice: 0.046
+  memoryGibHourPrice: 0.005
+  awsNodePrices: {}
+
+scrapeIntervalSeconds: 30
+logLevel: info
+clusterName: kubernetes
+
+config:
+  existingConfigMap: ""
+
+metricsServiceMonitor:
+  enabled: false
+  namespace: ""
+  interval: 30s
+  additionalLabels: {}
+
+rbac:
+  create: true
