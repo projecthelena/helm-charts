@@ -68,6 +68,9 @@ scrapeIntervalSeconds: 30
 logLevel: info
 clusterName: kubernetes
 
+# Optional pricing overrides; leave null to use the agent's built-in defaults.
+pricing: null
+
 config:
   existingConfigMap: ""
 

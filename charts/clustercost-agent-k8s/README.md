@@ -34,7 +34,7 @@ helm install clustercost-agent ./deployment/helm \
 | `service.port` | HTTP/metrics port | `8080` |
 | `service.annotations` | Extra annotations for the Service | `{}` |
 | `clusterName` | Name advertised on the API/metrics (`CLUSTER_NAME` env) | `kubernetes` |
-| `pricing.*` | CPU/memory pricing + optional AWS node prices overrides | see `values.yaml` |
+| `pricing` | Pricing overrides; set to `null` to use agent defaults | `null` |
 | `config.existingConfigMap` | Use an externally managed ConfigMap for `config.yaml` | `""` |
 | `metricsServiceMonitor.enabled` | Create ServiceMonitor for Prometheus Operator | `false` |
 | `metricsServiceMonitor.additionalLabels` | Extra labels for ServiceMonitor selector | `{}` |
@@ -42,7 +42,7 @@ helm install clustercost-agent ./deployment/helm \
 
 ### AWS node price overrides
 
-The agent ships with embedded AWS pricing data. To override/add entries via Helm, specify:
+The agent ships with embedded AWS pricing data. Leave `pricing: null` and the agent will pick its defaults. To override/add entries via Helm, specify:
 
 ```yaml
 pricing:

@@ -14,19 +14,29 @@ data:
     listenAddr: ":8080"
     logLevel: {{ .Values.logLevel | quote }}
     scrapeIntervalSeconds: {{ .Values.scrapeIntervalSeconds }}
+    {{- with .Values.pricing }}
     pricing:
-      provider: {{ .Values.pricing.provider | quote }}
-      region: {{ .Values.pricing.region | quote }}
-      cpuHourPrice: {{ .Values.pricing.cpuHourPrice }}
-      memoryGibHourPrice: {{ .Values.pricing.memoryGibHourPrice }}
-      {{- if .Values.pricing.awsNodePrices }}
+      {{- with .provider }}
+      provider: {{ . | quote }}
+      {{- end }}
+      {{- with .region }}
+      region: {{ . | quote }}
+      {{- end }}
+      {{- with .cpuHourPrice }}
+      cpuHourPrice: {{ . }}
+      {{- end }}
+      {{- with .memoryGibHourPrice }}
+      memoryGibHourPrice: {{ . }}
+      {{- end }}
+      {{- if .awsNodePrices }}
       aws:
         nodePrices:
-          {{- range $region, $instances := .Values.pricing.awsNodePrices }}
+          {{- range $region, $instances := .awsNodePrices }}
           {{ $region }}:
             {{- range $instance, $price := $instances }}
             {{ $instance }}: {{ $price }}
             {{- end }}
           {{- end }}
       {{- end }}
+    {{- end }}
 {{- end }}

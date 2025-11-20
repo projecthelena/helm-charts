@@ -50,15 +50,20 @@
     "livenessProbe": {"$ref": "#/definitions/probe"},
     "readinessProbe": {"$ref": "#/definitions/probe"},
     "pricing": {
-      "type": "object",
-      "properties": {
-        "provider": {"type": "string"},
-        "region": {"type": "string"},
-        "cpuHourPrice": {"type": "number"},
-        "memoryGibHourPrice": {"type": "number"},
-        "awsNodePrices": {"type": "object"}
-      },
-      "additionalProperties": false
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "properties": {
+            "provider": {"type": "string"},
+            "region": {"type": "string"},
+            "cpuHourPrice": {"type": "number"},
+            "memoryGibHourPrice": {"type": "number"},
+            "awsNodePrices": {"type": "object"}
+          },
+          "additionalProperties": false
+        }
+      ]
     },
     "scrapeIntervalSeconds": {"type": "integer", "minimum": 1},
     "logLevel": {"type": "string"},
