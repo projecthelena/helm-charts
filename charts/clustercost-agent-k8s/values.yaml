@@ -56,7 +56,7 @@ livenessProbe:
 readinessProbe:
   enabled: true
   httpGet:
-    path: /agent/v1/readyz
+    path: /agent/v1/health
     port: http
   initialDelaySeconds: 5
   periodSeconds: 10
