@@ -1,7 +1,7 @@
 {{- $fullName := include "clustercost-agent-k8s.fullname" . -}}
 {{- $configChecksum := include (print $.Template.BasePath "/configmap.yaml") . | sha256sum -}}
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: {{ $fullName }}
   labels:
@@ -10,7 +10,6 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
-  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       {{- include "clustercost-agent-k8s.selectorLabels" . | nindent 6 }}
@@ -28,6 +27,12 @@ spec:
         {{- end }}
     spec:
       serviceAccountName: {{ include "clustercost-agent-k8s.serviceAccountName" . }}
+      {{- if .Values.pod.hostNetwork }}
+      hostNetwork: true
+      {{- end }}
+      {{- if .Values.pod.hostPID }}
+      hostPID: true
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -49,12 +54,83 @@ spec:
             - {{ . | quote }}
             {{- end }}
           env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: CLUSTERCOST_CLUSTER_NAME
+              value: {{ .Values.clusterName | quote }}
+            {{- if .Values.provider }}
+            - name: CLUSTERCOST_PROVIDER
+              value: {{ .Values.provider | quote }}
+            {{- end }}
+            {{- if .Values.region }}
+            - name: CLUSTERCOST_REGION
+              value: {{ .Values.region | quote }}
+            {{- end }}
+            - name: CLUSTERCOST_SCRAPE_INTERVAL
+              value: {{ printf "%ds" (int .Values.scrapeIntervalSeconds) | quote }}
+            - name: CLUSTERCOST_LISTEN_ADDR
+              value: {{ .Values.listenAddr | quote }}
             - name: CLUSTERCOST_CONFIG_FILE
               value: /etc/clustercost/config.yaml
             - name: CLUSTERCOST_LOG_LEVEL
               value: {{ .Values.logLevel | quote }}
             - name: CLUSTER_NAME
               value: {{ .Values.clusterName | quote }}
+            {{- if .Values.ebpf.enabled }}
+            - name: CLUSTERCOST_EBPF_METRICS_ENABLED
+              value: {{ .Values.ebpf.metricsEnabled | quote }}
+            - name: CLUSTERCOST_NETWORK_ENABLED
+              value: {{ .Values.ebpf.networkEnabled | quote }}
+            - name: CLUSTERCOST_EBPF_METRICS_MAP_PATH
+              value: {{ .Values.ebpf.metricsMapPath | quote }}
+            - name: CLUSTERCOST_EBPF_MAP_PATH
+              value: {{ .Values.ebpf.mapPath | quote }}
+            - name: CLUSTERCOST_EBPF_METRICS_OBJECT
+              value: {{ .Values.ebpf.metricsObject | quote }}
+            - name: CLUSTERCOST_EBPF_NET_OBJECT
+              value: {{ .Values.ebpf.netObject | quote }}
+            - name: CLUSTERCOST_EBPF_METRICS_CGROUP_PATH
+              value: {{ .Values.ebpf.metricsCgroupPath | quote }}
+            - name: CLUSTERCOST_EBPF_NET_CGROUP_PATH
+              value: {{ .Values.ebpf.netCgroupPath | quote }}
+            - name: CLUSTERCOST_CGROUP_ROOT
+              value: {{ .Values.ebpf.cgroupRoot | quote }}
+            {{- end }}
+            {{- if .Values.networkEgressGibPrice }}
+            - name: CLUSTERCOST_NETWORK_EGRESS_GIB_PRICE
+              value: {{ .Values.networkEgressGibPrice | quote }}
+            {{- end }}
+            {{- if .Values.remote.enabled }}
+            - name: CLUSTERCOST_REMOTE_ENABLED
+              value: "true"
+            - name: CLUSTERCOST_REMOTE_ENDPOINT
+              value: {{ .Values.remote.endpoint | quote }}
+            - name: CLUSTERCOST_REMOTE_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.remote.authTokenSecret.name }}
+                  key: {{ .Values.remote.authTokenSecret.key }}
+            - name: CLUSTERCOST_REMOTE_TIMEOUT
+              value: {{ .Values.remote.timeout | quote }}
+            - name: CLUSTERCOST_REMOTE_QUEUE_DIR
+              value: {{ .Values.remote.queueDir | quote }}
+            - name: CLUSTERCOST_REMOTE_FLUSH_EVERY
+              value: {{ .Values.remote.flushEvery | quote }}
+            - name: CLUSTERCOST_REMOTE_MAX_BATCH
+              value: {{ .Values.remote.maxBatch | quote }}
+            - name: CLUSTERCOST_REMOTE_MAX_RETRIES
+              value: {{ .Values.remote.maxRetries | quote }}
+            - name: CLUSTERCOST_REMOTE_BACKOFF
+              value: {{ .Values.remote.backoff | quote }}
+            - name: CLUSTERCOST_REMOTE_MAX_BATCH_BYTES
+              value: {{ .Values.remote.maxBatchBytes | quote }}
+            - name: CLUSTERCOST_REMOTE_MEMORY_BUFFER
+              value: {{ .Values.remote.memoryBuffer | quote }}
+            - name: CLUSTERCOST_REMOTE_GZIP
+              value: {{ .Values.remote.gzip | quote }}
+            {{- end }}
             {{- range .Values.extraEnv }}
             - name: {{ .name }}
               {{- if hasKey . "valueFrom" }}
@@ -91,6 +167,24 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /etc/clustercost
+            {{- if .Values.ebpf.mountBpf }}
+            - name: bpf
+              mountPath: /sys/fs/bpf
+            {{- end }}
+            {{- if .Values.ebpf.mountCgroup }}
+            - name: cgroup
+              mountPath: /sys/fs/cgroup
+              readOnly: true
+            {{- end }}
+            {{- if .Values.ebpf.mountBtf }}
+            - name: btf
+              mountPath: /sys/kernel/btf
+              readOnly: true
+            {{- end }}
+            {{- if and .Values.remote.enabled .Values.remote.queueEnabled }}
+            - name: queue
+              mountPath: {{ .Values.remote.queueDir }}
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -107,3 +201,22 @@ spec:
         - name: config
           configMap:
             name: {{ default $fullName .Values.config.existingConfigMap }}
+        {{- if .Values.ebpf.mountBpf }}
+        - name: bpf
+          hostPath:
+            path: /sys/fs/bpf
+        {{- end }}
+        {{- if .Values.ebpf.mountCgroup }}
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+        {{- end }}
+        {{- if .Values.ebpf.mountBtf }}
+        - name: btf
+          hostPath:
+            path: /sys/kernel/btf
+        {{- end }}
+        {{- if and .Values.remote.enabled .Values.remote.queueEnabled }}
+        - name: queue
+          emptyDir: {}
+        {{- end }}
