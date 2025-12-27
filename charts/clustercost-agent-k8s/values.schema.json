@@ -3,7 +3,6 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "replicaCount": {"type": "integer", "minimum": 1},
     "image": {
       "type": "object",
       "properties": {
@@ -15,6 +14,14 @@
       "additionalProperties": false
     },
     "imagePullSecrets": {"type": "array", "items": {"type": "object"}},
+    "namespace": {
+      "type": "object",
+      "properties": {
+        "create": {"type": "boolean"},
+        "name": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
     "serviceAccount": {
       "type": "object",
       "properties": {
@@ -43,6 +50,14 @@
     "podLabels": {"$ref": "#/definitions/labelMap"},
     "podAnnotations": {"$ref": "#/definitions/labelMap"},
     "podSecurityContext": {"type": "object"},
+    "pod": {
+      "type": "object",
+      "properties": {
+        "hostNetwork": {"type": "boolean"},
+        "hostPID": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
     "securityContext": {"type": "object"},
     "extraEnv": {"type": "array", "items": {"$ref": "#/definitions/envVar"}},
     "extraEnvFrom": {"type": "array", "items": {"type": "object"}},
@@ -68,6 +83,57 @@
     "scrapeIntervalSeconds": {"type": "integer", "minimum": 1},
     "logLevel": {"type": "string"},
     "clusterName": {"type": "string"},
+    "provider": {"type": "string"},
+    "region": {"type": "string"},
+    "listenAddr": {"type": "string"},
+    "networkEgressGibPrice": {"type": "string"},
+    "ebpf": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "metricsEnabled": {"type": "string"},
+        "networkEnabled": {"type": "string"},
+        "metricsMapPath": {"type": "string"},
+        "mapPath": {"type": "string"},
+        "metricsObject": {"type": "string"},
+        "netObject": {"type": "string"},
+        "metricsCgroupPath": {"type": "string"},
+        "netCgroupPath": {"type": "string"},
+        "cgroupRoot": {"type": "string"},
+        "mountBpf": {"type": "boolean"},
+        "mountCgroup": {"type": "boolean"},
+        "mountBtf": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "remote": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "endpoint": {"type": "string"},
+        "timeout": {"type": "string"},
+        "queueDir": {"type": "string"},
+        "queueEnabled": {"type": "boolean"},
+        "flushEvery": {"type": "string"},
+        "maxBatch": {"type": "string"},
+        "maxRetries": {"type": "string"},
+        "backoff": {"type": "string"},
+        "maxBatchBytes": {"type": "string"},
+        "memoryBuffer": {"type": "string"},
+        "gzip": {"type": "string"},
+        "authTokenSecret": {
+          "type": "object",
+          "properties": {
+            "create": {"type": "boolean"},
+            "name": {"type": "string"},
+            "key": {"type": "string"},
+            "value": {"type": "string"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
     "config": {
       "type": "object",
       "properties": {

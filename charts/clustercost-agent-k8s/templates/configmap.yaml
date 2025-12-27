@@ -11,7 +11,7 @@ metadata:
 data:
   config.yaml: |
     clusterName: {{ .Values.clusterName | quote }}
-    listenAddr: ":8080"
+    listenAddr: {{ .Values.listenAddr | quote }}
     logLevel: {{ .Values.logLevel | quote }}
     scrapeIntervalSeconds: {{ .Values.scrapeIntervalSeconds }}
     {{- with .Values.pricing }}

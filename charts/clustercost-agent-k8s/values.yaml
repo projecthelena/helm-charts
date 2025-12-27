@@ -1,11 +1,13 @@
-replicaCount: 1
-
 image:
   repository: jesuspaz/clustercost-agent-k8s
   tag: "latest"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
+
+namespace:
+  create: false
+  name: ""
 
 serviceAccount:
   create: true
@@ -21,11 +23,11 @@ service:
 
 resources:
   requests:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 200m
+    memory: 256Mi
   limits:
-    cpu: 500m
-    memory: 512Mi
+    cpu: "1"
+    memory: 1Gi
 
 nodeSelector: {}
 affinity: {}
@@ -36,7 +38,12 @@ priorityClassName: ""
 podLabels: {}
 podAnnotations: {}
 podSecurityContext: {}
-securityContext: {}
+pod:
+  hostNetwork: true
+  hostPID: true
+
+securityContext:
+  privileged: true
 
 extraEnv: []
 extraEnvFrom: []
@@ -56,7 +63,7 @@ livenessProbe:
 readinessProbe:
   enabled: true
   httpGet:
-    path: /agent/v1/health
+    path: /agent/v1/readyz
     port: http
   initialDelaySeconds: 5
   periodSeconds: 10
@@ -67,6 +74,44 @@ readinessProbe:
 scrapeIntervalSeconds: 30
 logLevel: info
 clusterName: kubernetes
+provider: aws
+region: us-east-1
+listenAddr: ":8080"
+networkEgressGibPrice: "0.09"
+
+ebpf:
+  enabled: true
+  metricsEnabled: "true"
+  networkEnabled: "true"
+  metricsMapPath: /sys/fs/bpf/clustercost/metrics
+  mapPath: /sys/fs/bpf/clustercost/flows
+  metricsObject: /opt/clustercost/bpf/metrics.bpf.o
+  netObject: /opt/clustercost/bpf/flows.bpf.o
+  metricsCgroupPath: /sys/fs/cgroup
+  netCgroupPath: /sys/fs/cgroup
+  cgroupRoot: /sys/fs/cgroup
+  mountBpf: true
+  mountCgroup: true
+  mountBtf: true
+
+remote:
+  enabled: true
+  endpoint: https://central-agent.example.com/agent/v1/report
+  timeout: 10s
+  queueDir: /var/lib/clustercost/queue
+  queueEnabled: true
+  flushEvery: 15s
+  maxBatch: "200"
+  maxRetries: "8"
+  backoff: 1s
+  maxBatchBytes: "1048576"
+  memoryBuffer: "5"
+  gzip: "true"
+  authTokenSecret:
+    create: true
+    name: clustercost-remote
+    key: token
+    value: "replace-me"
 
 # Optional pricing overrides; leave null to use the agent's built-in defaults.
 pricing: null
