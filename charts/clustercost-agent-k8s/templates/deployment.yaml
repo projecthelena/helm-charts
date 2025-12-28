@@ -56,6 +56,7 @@ spec:
           volumeMounts:
             - name: bpf
               mountPath: /sys/fs/bpf
+              mountPropagation: Bidirectional
       {{- end }}
       containers:
         - name: agent
@@ -183,6 +184,7 @@ spec:
             {{- if .Values.ebpf.mountBpf }}
             - name: bpf
               mountPath: /sys/fs/bpf
+              mountPropagation: Bidirectional
             {{- end }}
             {{- if .Values.ebpf.mountCgroup }}
             - name: cgroup
