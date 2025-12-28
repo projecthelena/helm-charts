@@ -44,20 +44,6 @@ spec:
       {{- if .Values.priorityClassName }}
       priorityClassName: {{ .Values.priorityClassName | quote }}
       {{- end }}
-      {{- if and .Values.ebpf.enabled .Values.ebpf.init.enabled }}
-      initContainers:
-        - name: mount-bpffs
-          image: {{ .Values.ebpf.init.image | quote }}
-          imagePullPolicy: {{ .Values.ebpf.init.imagePullPolicy }}
-          command:
-            {{- toYaml .Values.ebpf.init.command | nindent 12 }}
-          securityContext:
-            privileged: true
-          volumeMounts:
-            - name: bpf
-              mountPath: /sys/fs/bpf
-              mountPropagation: Bidirectional
-      {{- end }}
       containers:
         - name: agent
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
