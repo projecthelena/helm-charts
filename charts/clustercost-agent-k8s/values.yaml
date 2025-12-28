@@ -102,20 +102,6 @@ ebpf:
   mountBpf: true
   mountCgroup: true
   mountBtf: true
-  init:
-    enabled: true
-    image: busybox:1.36
-    imagePullPolicy: IfNotPresent
-    command:
-      - sh
-      - -c
-      - >-
-        if mountpoint -q /sys/fs/bpf; then
-          mount -o remount,mode=0777 /sys/fs/bpf;
-        else
-          mount -t bpf -o mode=0777 bpf /sys/fs/bpf;
-        fi;
-        install -d -m 0777 /sys/fs/bpf/clustercost
 
 remote:
   enabled: true
