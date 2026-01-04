@@ -10,114 +10,205 @@
     "image": {
       "type": "object",
       "properties": {
-        "repository": {"type": "string"},
-        "tag": {"type": "string"},
-        "pullPolicy": {"type": "string"}
+        "repository": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        },
+        "pullPolicy": {
+          "type": "string"
+        }
       },
-      "required": ["repository"],
+      "required": [
+        "repository"
+      ],
       "additionalProperties": false
     },
     "imagePullSecrets": {
       "type": "array",
-      "items": {"type": "object"}
+      "items": {
+        "type": "object"
+      }
     },
-    "nameOverride": {"type": "string"},
-    "fullnameOverride": {"type": "string"},
+    "nameOverride": {
+      "type": "string"
+    },
+    "fullnameOverride": {
+      "type": "string"
+    },
     "serviceAccount": {
       "type": "object",
       "properties": {
-        "create": {"type": "boolean"},
-        "annotations": {"$ref": "#/definitions/labelMap"},
-        "name": {"type": "string"}
+        "create": {
+          "type": "boolean"
+        },
+        "annotations": {
+          "$ref": "#/definitions/labelMap"
+        },
+        "name": {
+          "type": "string"
+        }
       },
       "additionalProperties": false
     },
-    "commonLabels": {"$ref": "#/definitions/labelMap"},
-    "podLabels": {"$ref": "#/definitions/labelMap"},
-    "podAnnotations": {"$ref": "#/definitions/labelMap"},
-    "deploymentAnnotations": {"$ref": "#/definitions/labelMap"},
-    "podSecurityContext": {"type": "object"},
-    "securityContext": {"type": "object"},
+    "commonLabels": {
+      "$ref": "#/definitions/labelMap"
+    },
+    "podLabels": {
+      "$ref": "#/definitions/labelMap"
+    },
+    "podAnnotations": {
+      "$ref": "#/definitions/labelMap"
+    },
+    "deploymentAnnotations": {
+      "$ref": "#/definitions/labelMap"
+    },
+    "podSecurityContext": {
+      "type": "object"
+    },
+    "securityContext": {
+      "type": "object"
+    },
     "service": {
       "type": "object",
       "properties": {
-        "type": {"type": "string"},
-        "port": {"type": "integer"},
-        "targetPort": {
-          "oneOf": [{"type": "integer"}, {"type": "string"}]
+        "type": {
+          "type": "string"
         },
-        "annotations": {"$ref": "#/definitions/labelMap"}
+        "httpPort": {
+          "type": "integer"
+        },
+        "grpcPort": {
+          "type": "integer"
+        },
+        "annotations": {
+          "$ref": "#/definitions/labelMap"
+        }
       },
-      "required": ["type", "port", "targetPort"],
+      "required": [
+        "type",
+        "httpPort",
+        "grpcPort"
+      ],
       "additionalProperties": false
     },
     "ingress": {
       "type": "object",
       "properties": {
-        "enabled": {"type": "boolean"},
-        "className": {"type": "string"},
-        "annotations": {"$ref": "#/definitions/labelMap"},
+        "enabled": {
+          "type": "boolean"
+        },
+        "className": {
+          "type": "string"
+        },
+        "annotations": {
+          "$ref": "#/definitions/labelMap"
+        },
         "hosts": {
           "type": "array",
           "items": {
             "type": "object",
             "properties": {
-              "host": {"type": "string"},
+              "host": {
+                "type": "string"
+              },
               "paths": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "path": {"type": "string"},
-                    "pathType": {"type": "string"}
+                    "path": {
+                      "type": "string"
+                    },
+                    "pathType": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["path", "pathType"],
+                  "required": [
+                    "path",
+                    "pathType"
+                  ],
                   "additionalProperties": false
                 }
               }
             },
-            "required": ["host", "paths"],
+            "required": [
+              "host",
+              "paths"
+            ],
             "additionalProperties": false
           }
         },
         "tls": {
           "type": "array",
-          "items": {"type": "object"}
+          "items": {
+            "type": "object"
+          }
         }
       },
       "additionalProperties": false
     },
-    "resources": {"type": "object"},
-    "nodeSelector": {"$ref": "#/definitions/labelMap"},
-    "tolerations": {"type": "array", "items": {"type": "object"}},
-    "affinity": {"type": "object"},
+    "resources": {
+      "type": "object"
+    },
+    "nodeSelector": {
+      "$ref": "#/definitions/labelMap"
+    },
+    "tolerations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "affinity": {
+      "type": "object"
+    },
     "env": {
       "type": "object",
-      "additionalProperties": {"type": "string"}
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "extraEnv": {
       "type": "array",
-      "items": {"$ref": "#/definitions/envVar"}
+      "items": {
+        "$ref": "#/definitions/envVar"
+      }
     },
     "extraEnvFrom": {
       "type": "array",
-      "items": {"type": "object"}
+      "items": {
+        "type": "object"
+      }
     },
-    "livenessProbe": {"$ref": "#/definitions/probe"},
-    "readinessProbe": {"$ref": "#/definitions/probe"},
+    "livenessProbe": {
+      "$ref": "#/definitions/probe"
+    },
+    "readinessProbe": {
+      "$ref": "#/definitions/probe"
+    },
     "agents": {
       "description": "Optional override for config.agents",
       "type": "array",
-      "items": {"$ref": "#/definitions/agent"}
+      "items": {
+        "$ref": "#/definitions/agent"
+      }
     },
     "config": {
       "type": "object",
       "properties": {
-        "listenAddr": {"type": "string"},
-        "pollInterval": {"type": "string"},
+        "listenAddr": {
+          "type": "string"
+        },
+        "pollInterval": {
+          "type": "string"
+        },
         "agents": {
           "type": "array",
-          "items": {"$ref": "#/definitions/agent"}
+          "items": {
+            "$ref": "#/definitions/agent"
+          }
         }
       },
       "additionalProperties": true
@@ -126,54 +217,117 @@
   "definitions": {
     "labelMap": {
       "type": "object",
-      "additionalProperties": {"type": "string"}
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "envVar": {
       "type": "object",
       "properties": {
-        "name": {"type": "string"},
-        "value": {"type": "string"},
-        "valueFrom": {"type": "object"}
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "valueFrom": {
+          "type": "object"
+        }
       },
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "anyOf": [
-        {"required": ["value"]},
-        {"required": ["valueFrom"]}
+        {
+          "required": [
+            "value"
+          ]
+        },
+        {
+          "required": [
+            "valueFrom"
+          ]
+        }
       ],
       "additionalProperties": true
     },
     "probe": {
       "type": "object",
       "properties": {
-        "enabled": {"type": "boolean"},
+        "enabled": {
+          "type": "boolean"
+        },
         "httpGet": {
           "type": "object",
           "properties": {
-            "path": {"type": "string"},
+            "path": {
+              "type": "string"
+            },
             "port": {
-              "oneOf": [{"type": "string"}, {"type": "integer"}]
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
             }
           },
-          "required": ["path", "port"],
+          "required": [
+            "path",
+            "port"
+          ],
           "additionalProperties": true
         },
-        "initialDelaySeconds": {"type": "integer", "minimum": 0},
-        "periodSeconds": {"type": "integer", "minimum": 1},
-        "timeoutSeconds": {"type": "integer", "minimum": 1},
-        "failureThreshold": {"type": "integer", "minimum": 1},
-        "successThreshold": {"type": "integer", "minimum": 1}
+        "initialDelaySeconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "periodSeconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "timeoutSeconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "failureThreshold": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "successThreshold": {
+          "type": "integer",
+          "minimum": 1
+        }
       },
-      "required": ["enabled"],
+      "required": [
+        "enabled"
+      ],
       "additionalProperties": true
     },
     "agent": {
       "type": "object",
       "properties": {
-        "name": {"type": "string"},
-        "baseUrl": {"type": "string"},
-        "type": {"type": "string"}
+        "name": {
+          "type": "string"
+        },
+        "baseUrl": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        }
       },
-      "required": ["name", "baseUrl", "type"],
+      "required": [
+        "name",
+        "baseUrl",
+        "type",
+        "token"
+      ],
       "additionalProperties": false
     }
   }

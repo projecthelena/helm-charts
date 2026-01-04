@@ -24,8 +24,8 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 9090
-  targetPort: 9090
+  httpPort: 9090
+  grpcPort: 9091
   annotations: {}
 
 ingress:
@@ -52,8 +52,7 @@ tolerations: []
 affinity: {}
 
 env:
-  LISTEN_ADDR: ":9090"
-  CONFIG_FILE: /config/dashboard.yaml
+  CONFIG_FILE: /etc/clustercost/config.yaml
 
 extraEnv: []
 extraEnvFrom: []
@@ -84,8 +83,11 @@ readinessProbe:
 
 config:
   listenAddr: ":9090"
+  grpcAddr: ":9091"
+  defaultAgentToken: ""
   pollInterval: 30s
   agents:
     - name: local-cluster
       baseUrl: http://clustercost-agent-clustercost-agent-k8s.clustercost.svc.cluster.local:8080
+      token: "change-me"
       type: k8s

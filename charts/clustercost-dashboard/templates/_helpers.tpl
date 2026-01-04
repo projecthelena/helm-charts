@@ -41,3 +41,16 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "clustercost-dashboard.defaultAgentToken" -}}
+{{- if .Values.config.defaultAgentToken }}
+{{- .Values.config.defaultAgentToken }}
+{{- else }}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (include "clustercost-dashboard.fullname" .) ) }}
+{{- if $secret }}
+{{- index $secret.data "config.yaml" | b64dec | fromYaml | get "defaultAgentToken" }}
+{{- else }}
+{{- randAlphaNum 32 }}
+{{- end }}
+{{- end }}
+{{- end }}

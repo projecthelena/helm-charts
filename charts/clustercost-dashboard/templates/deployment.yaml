@@ -1,5 +1,5 @@
 {{- $fullName := include "clustercost-dashboard.fullname" . -}}
-{{- $configChecksum := include (print $.Template.BasePath "/configmap.yaml") . | sha256sum -}}
+{{- $configChecksum := include (print $.Template.BasePath "/secret.yaml") . | sha256sum -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -46,8 +46,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.targetPort }}
-          {{- if or .Values.env .Values.extraEnv }}
+              containerPort: {{ .Values.service.httpPort }}
+            - name: grpc
+              containerPort: {{ .Values.service.grpcPort }}
           env:
             {{- range $name, $value := .Values.env }}
             - name: {{ $name }}
@@ -62,14 +63,15 @@ spec:
               value: {{ .value | quote }}
               {{- end }}
             {{- end }}
-          {{- end }}
+
           {{- with .Values.extraEnvFrom }}
           envFrom:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: dashboard-config
-              mountPath: /config
+            - name: config-volume
+              mountPath: /etc/clustercost
+              readOnly: true
           {{- $liveness := .Values.livenessProbe }}
           {{- if $liveness.enabled }}
           livenessProbe:
@@ -87,9 +89,9 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
-        - name: dashboard-config
-          configMap:
-            name: {{ $fullName }}-config
+        - name: config-volume
+          secret:
+            secretName: {{ $fullName }}-config
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
