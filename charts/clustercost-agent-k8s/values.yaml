@@ -53,6 +53,8 @@ securityContext:
       - SYS_ADMIN
       - BPF
       - PERFMON
+  seccompProfile:
+    type: Unconfined
 
 extraEnv: []
 extraEnvFrom: []
@@ -102,10 +104,11 @@ ebpf:
   mountBpf: true
   mountCgroup: true
   mountBtf: true
+  mountDebug: true
 
 remote:
   enabled: true
-  endpoint: https://central-agent.example.com/agent/v1/report
+  endpoint: http://clustercost-dashboard.clustercost.svc.cluster.local:9090/agent/v1/report
   timeout: 10s
   queueDir: /var/lib/clustercost/queue
   queueEnabled: true

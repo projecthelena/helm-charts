@@ -182,6 +182,11 @@ spec:
               mountPath: /sys/kernel/btf
               readOnly: true
             {{- end }}
+            {{- if .Values.ebpf.mountDebug }}
+            - name: debug
+              mountPath: /sys/kernel/debug
+              readOnly: false
+            {{- end }}
             {{- if and .Values.remote.enabled .Values.remote.queueEnabled }}
             - name: queue
               mountPath: {{ .Values.remote.queueDir }}
@@ -216,6 +221,11 @@ spec:
         - name: btf
           hostPath:
             path: /sys/kernel/btf
+        {{- end }}
+        {{- if .Values.ebpf.mountDebug }}
+        - name: debug
+          hostPath:
+            path: /sys/kernel/debug
         {{- end }}
         {{- if and .Values.remote.enabled .Values.remote.queueEnabled }}
         - name: queue
