@@ -53,6 +53,8 @@ affinity: {}
 
 env:
   DISABLE_HTTP_POLLING: "true"
+  # URL to the in-cluster VictoriaMetrics service (no auth by default).
+  VICTORIA_METRICS_URL: "http://victoria-metrics:8428"
 
 extraEnv: []
 extraEnvFrom: []
@@ -86,3 +88,28 @@ config:
   grpcAddr: ":9091"
   disableHttpPolling: true
   agents: []
+
+victoriaMetrics:
+  enabled: true
+  image:
+    repository: victoriametrics/victoria-metrics
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8428
+    annotations: {}
+  persistence:
+    enabled: true
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    storageClass: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  podAnnotations: {}
+  podLabels: {}

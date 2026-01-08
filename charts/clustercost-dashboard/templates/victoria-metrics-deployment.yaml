@@ -1,0 +1,63 @@
+{{- if .Values.victoriaMetrics.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "clustercost-dashboard.fullname" . }}-victoria-metrics
+  labels:
+    {{- include "clustercost-dashboard.labels" . | nindent 4 }}
+    app.kubernetes.io/component: victoria-metrics
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  serviceName: victoria-metrics
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "clustercost-dashboard.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: victoria-metrics
+  template:
+    metadata:
+      labels:
+        {{- include "clustercost-dashboard.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: victoria-metrics
+        {{- with .Values.victoriaMetrics.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.victoriaMetrics.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      containers:
+        - name: victoria-metrics
+          image: "{{ .Values.victoriaMetrics.image.repository }}:{{ .Values.victoriaMetrics.image.tag }}"
+          imagePullPolicy: {{ .Values.victoriaMetrics.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.victoriaMetrics.service.port }}
+          volumeMounts:
+            - name: data
+              mountPath: /victoria-metrics-data
+          resources:
+            {{- toYaml .Values.victoriaMetrics.resources | nindent 12 }}
+      {{- if not .Values.victoriaMetrics.persistence.enabled }}
+      volumes:
+        - name: data
+          emptyDir: {}
+      {{- end }}
+  {{- if .Values.victoriaMetrics.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - {{ .Values.victoriaMetrics.persistence.accessMode }}
+        resources:
+          requests:
+            storage: {{ .Values.victoriaMetrics.persistence.size }}
+        {{- if .Values.victoriaMetrics.persistence.storageClass }}
+        storageClassName: {{ .Values.victoriaMetrics.persistence.storageClass | quote }}
+        {{- end }}
+  {{- end }}
+{{- end }}

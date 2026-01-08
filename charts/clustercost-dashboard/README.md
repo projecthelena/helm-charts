@@ -20,7 +20,9 @@ Use `-f my-values.yaml` or `--set key=value` to override defaults.
 | `commonLabels` | Extra labels applied to all dashboard resources | `{}` |
 | `agents` | Optional list of agent endpoints; overrides `config.agents` | `[]` |
 | `config` | Dashboard YAML config rendered into a ConfigMap | See `values.yaml` |
-| `env` | Extra environment variables for the container | DISABLE_HTTP_POLLING |
+| `env` | Extra environment variables for the container | DISABLE_HTTP_POLLING, VICTORIA_METRICS_URL |
+| `victoriaMetrics.enabled` | Deploy a single-node VictoriaMetrics instance | `true` |
+| `victoriaMetrics.persistence` | VictoriaMetrics PVC settings | See `values.yaml` |
 | `ingress.enabled` | Creates an Ingress pointing to the dashboard service | `false` |
 
 See `values.yaml` for the full list.

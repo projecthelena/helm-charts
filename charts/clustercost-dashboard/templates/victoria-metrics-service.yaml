@@ -1,0 +1,25 @@
+{{- if .Values.victoriaMetrics.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: victoria-metrics
+  labels:
+    {{- include "clustercost-dashboard.labels" . | nindent 4 }}
+    app.kubernetes.io/component: victoria-metrics
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.victoriaMetrics.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.victoriaMetrics.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.victoriaMetrics.service.port }}
+      targetPort: http
+  selector:
+    {{- include "clustercost-dashboard.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: victoria-metrics
+{{- end }}

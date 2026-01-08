@@ -215,6 +215,79 @@
         }
       },
       "additionalProperties": true
+    },
+    "victoriaMetrics": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string"
+            },
+            "tag": {
+              "type": "string"
+            },
+            "pullPolicy": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "repository"
+          ],
+          "additionalProperties": false
+        },
+        "service": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "port": {
+              "type": "integer"
+            },
+            "annotations": {
+              "$ref": "#/definitions/labelMap"
+            }
+          },
+          "required": [
+            "type",
+            "port"
+          ],
+          "additionalProperties": false
+        },
+        "persistence": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "accessMode": {
+              "type": "string"
+            },
+            "size": {
+              "type": "string"
+            },
+            "storageClass": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "resources": {
+          "type": "object"
+        },
+        "podAnnotations": {
+          "$ref": "#/definitions/labelMap"
+        },
+        "podLabels": {
+          "$ref": "#/definitions/labelMap"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "definitions": {
