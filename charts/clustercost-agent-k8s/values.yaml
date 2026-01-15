@@ -94,6 +94,9 @@ ebpf:
   enabled: true
   metricsEnabled: "true"
   networkEnabled: "true"
+  networkDetailed: "true"
+  networkDnsCapture: "true"
+  networkDnsSampleRate: "100"
   metricsMapPath: /sys/fs/bpf/clustercost/metrics
   mapPath: /sys/fs/bpf/clustercost/flows
   metricsObject: /opt/clustercost/bpf/metrics.bpf.o

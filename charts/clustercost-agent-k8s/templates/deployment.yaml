@@ -84,6 +84,12 @@ spec:
               value: {{ .Values.ebpf.metricsEnabled | quote }}
             - name: CLUSTERCOST_NETWORK_ENABLED
               value: {{ .Values.ebpf.networkEnabled | quote }}
+            - name: CLUSTERCOST_NETWORK_DETAILED
+              value: {{ .Values.ebpf.networkDetailed | quote }}
+            - name: CLUSTERCOST_NETWORK_DNS_CAPTURE
+              value: {{ .Values.ebpf.networkDnsCapture | quote }}
+            - name: CLUSTERCOST_NETWORK_DNS_SAMPLE_RATE
+              value: {{ .Values.ebpf.networkDnsSampleRate | quote }}
             - name: CLUSTERCOST_EBPF_METRICS_MAP_PATH
               value: {{ .Values.ebpf.metricsMapPath | quote }}
             - name: CLUSTERCOST_EBPF_MAP_PATH

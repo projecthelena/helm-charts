@@ -204,6 +204,15 @@
         "networkEnabled": {
           "type": "string"
         },
+        "networkDetailed": {
+          "type": "string"
+        },
+        "networkDnsCapture": {
+          "type": "string"
+        },
+        "networkDnsSampleRate": {
+          "type": "string"
+        },
         "metricsMapPath": {
           "type": "string"
         },
