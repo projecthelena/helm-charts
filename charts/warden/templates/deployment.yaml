@@ -13,7 +13,13 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  {{- if eq .Values.database.type "sqlite" }}
+  replicas: 1
+  strategy:
+    type: Recreate
+  {{- else }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "warden.selectorLabels" . | nindent 6 }}
@@ -24,9 +30,14 @@ spec:
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-      {{- with .Values.podAnnotations }}
+      {{- if or (include "warden.createSecret" .) .Values.podAnnotations }}
       annotations:
+        {{- if include "warden.createSecret" . }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- end }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}
     spec:
       serviceAccountName: {{ include "warden.serviceAccountName" . }}
@@ -46,6 +57,41 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
           env:
+            - name: LISTEN_ADDR
+              value: {{ .Values.config.listenAddr | quote }}
+            {{- if eq .Values.database.type "sqlite" }}
+            - name: DB_TYPE
+              value: "sqlite"
+            - name: DB_PATH
+              value: {{ .Values.database.sqlite.path | quote }}
+            {{- else }}
+            - name: DB_TYPE
+              value: "postgres"
+            {{- if and .Values.database.external.enabled .Values.database.external.existingSecret }}
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.external.existingSecret }}
+                  key: {{ .Values.database.external.existingSecretKey }}
+            {{- else }}
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $fullName }}
+                  key: db-url
+            {{- end }}
+            {{- end }}
+            - name: COOKIE_SECURE
+              value: {{ .Values.config.cookieSecure | quote }}
+            - name: TRUST_PROXY
+              value: {{ .Values.config.trustProxy | quote }}
+            {{- if .Values.adminSecret }}
+            - name: ADMIN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $fullName }}
+                  key: admin-secret
+            {{- end }}
             {{- range $name, $value := .Values.env }}
             - name: {{ $name }}
               value: {{ $value | quote }}
@@ -59,6 +105,11 @@ spec:
               value: {{ .value | quote }}
               {{- end }}
             {{- end }}
+          {{- if eq .Values.database.type "sqlite" }}
+          volumeMounts:
+            - name: data
+              mountPath: {{ dir .Values.database.sqlite.path }}
+          {{- end }}
           {{- $liveness := .Values.livenessProbe }}
           {{- if $liveness.enabled }}
           livenessProbe:
@@ -75,6 +126,17 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      {{- if eq .Values.database.type "sqlite" }}
+      volumes:
+        {{- if .Values.database.sqlite.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}-data
+        {{- else }}
+        - name: data
+          emptyDir: {}
+        {{- end }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -5,13 +5,19 @@ type: application
 version: 0.1.0
 appVersion: "0.1.0"
 icon: https://raw.githubusercontent.com/projecthelena/charts/main/assets/icon.png
-home: https://github.com/projecthelena/charts
+home: https://github.com/projecthelena/helm-charts
 sources:
-  - https://github.com/projecthelena/charts
+  - https://github.com/projecthelena/helm-charts
 keywords:
-  - policy
+  - cost
   - finops
+  - policy
   - kubernetes
 maintainers:
   - name: Project Helena
     email: jesus@projecthelena.com
+dependencies:
+  - name: postgresql
+    version: "~16"
+    repository: https://charts.bitnami.com/bitnami
+    condition: database.postgres.enabled

@@ -1,9 +1,9 @@
 apiVersion: v2
 name: recon-agent
 description: Recon Kubernetes cost visibility agent
-home: https://github.com/projecthelena/charts
+home: https://github.com/projecthelena/helm-charts
 sources:
-  - https://github.com/projecthelena/charts
+  - https://github.com/projecthelena/helm-charts
 icon: https://raw.githubusercontent.com/projecthelena/charts/main/assets/icon.png
 keywords:
   - cost

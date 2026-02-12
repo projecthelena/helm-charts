@@ -24,8 +24,19 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 8080
+  port: 9090
   annotations: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: warden.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
 
 resources:
   requests:
@@ -38,6 +49,47 @@ resources:
 nodeSelector: {}
 tolerations: []
 affinity: {}
+
+# Application configuration
+config:
+  listenAddr: ":9090"
+  cookieSecure: false
+  trustProxy: false
+
+# Secret for initial setup — avoid in production
+adminSecret: ""
+
+# Database configuration
+database:
+  # "sqlite" or "postgres"
+  type: sqlite
+
+  # SQLite settings (only when type=sqlite)
+  sqlite:
+    path: /data/warden.db
+    persistence:
+      enabled: true
+      size: 1Gi
+      storageClass: ""
+
+  # Internal PostgreSQL subchart (only when type=postgres)
+  postgres:
+    enabled: false
+
+  # External PostgreSQL (only when type=postgres)
+  external:
+    enabled: false
+    url: ""
+    existingSecret: ""
+    existingSecretKey: "db-url"
+
+# Bitnami PostgreSQL subchart values
+# Only used when database.postgres.enabled=true
+postgresql:
+  auth:
+    username: warden
+    password: ""
+    database: warden
 
 env: {}
 extraEnv: []
