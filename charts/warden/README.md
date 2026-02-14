@@ -26,24 +26,22 @@ database:
       size: 1Gi
 ```
 
-### Internal PostgreSQL (subchart)
+### Internal PostgreSQL
 
-Deploys a Bitnami PostgreSQL pod alongside Warden. Requires `helm dependency update` first.
-
-```sh
-helm dependency update charts/warden
-```
+Deploys a PostgreSQL StatefulSet alongside Warden using the official `postgres:18` image.
 
 ```yaml
 database:
   type: postgres
   postgres:
     enabled: true
-postgresql:
-  auth:
-    username: warden
-    password: "my-secret-password"
-    database: warden
+    auth:
+      username: warden
+      password: "my-secret-password"   # auto-generated if omitted
+      database: warden
+    persistence:
+      enabled: true
+      size: 5Gi
 ```
 
 ### External PostgreSQL
