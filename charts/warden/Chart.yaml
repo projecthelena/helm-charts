@@ -16,8 +16,3 @@ keywords:
 maintainers:
   - name: Project Helena
     email: jesus@projecthelena.com
-dependencies:
-  - name: postgresql
-    version: "~16"
-    repository: https://charts.bitnami.com/bitnami
-    condition: database.postgres.enabled

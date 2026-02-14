@@ -1,0 +1,21 @@
+{{- if .Values.database.postgres.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "warden.fullname" . }}-postgresql
+  labels:
+    {{- include "warden.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgresql
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: postgresql
+      port: {{ .Values.database.postgres.service.port }}
+      targetPort: postgresql
+  selector:
+    {{- include "warden.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: postgresql
+{{- end }}
