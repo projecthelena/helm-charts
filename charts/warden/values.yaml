@@ -94,11 +94,14 @@ database:
       pullPolicy: IfNotPresent
     auth:
       username: warden
-      # Auto-generated (alphanumeric) when empty. If set manually, avoid
-      # URL-unsafe characters (@, :, /, ?, #) as the value is embedded
-      # in a postgres:// connection string.
+      # Required when no existingSecret is provided. Avoid URL-unsafe
+      # characters (@, :, /, ?, #) as the value is embedded in a
+      # postgres:// connection string.
       password: ""
       database: warden
+      # Use an existing Secret instead of creating one. The secret must
+      # contain "password" and "db-url" keys.
+      existingSecret: ""
     persistence:
       enabled: true
       size: 5Gi

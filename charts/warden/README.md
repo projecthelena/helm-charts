@@ -37,11 +37,22 @@ database:
     enabled: true
     auth:
       username: warden
-      password: "my-secret-password"   # auto-generated if omitted
+      password: "my-secret-password"
       database: warden
     persistence:
       enabled: true
       size: 5Gi
+```
+
+Or reference an existing Kubernetes secret (must contain `password` and `db-url` keys):
+
+```yaml
+database:
+  type: postgres
+  postgres:
+    enabled: true
+    auth:
+      existingSecret: my-pg-credentials
 ```
 
 ### External PostgreSQL

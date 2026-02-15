@@ -175,7 +175,8 @@
               "properties": {
                 "username": { "type": "string" },
                 "password": { "type": "string" },
-                "database": { "type": "string" }
+                "database": { "type": "string" },
+                "existingSecret": { "type": "string" }
               },
               "additionalProperties": false
             },

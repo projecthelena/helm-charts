@@ -71,7 +71,7 @@ spec:
             - name: DB_URL
               valueFrom:
                 secretKeyRef:
-                  name: {{ $fullName }}-postgresql
+                  name: {{ include "warden.postgresSecretName" . }}
                   key: db-url
             {{- end }}
           command:
@@ -117,7 +117,7 @@ spec:
             - name: DB_URL
               valueFrom:
                 secretKeyRef:
-                  name: {{ $fullName }}-postgresql
+                  name: {{ include "warden.postgresSecretName" . }}
                   key: db-url
             {{- end }}
             {{- end }}

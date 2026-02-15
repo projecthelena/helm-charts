@@ -43,6 +43,17 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Resolves the Secret name for internal PostgreSQL credentials.
+*/}}
+{{- define "warden.postgresSecretName" -}}
+{{- if .Values.database.postgres.auth.existingSecret -}}
+  {{- .Values.database.postgres.auth.existingSecret -}}
+{{- else -}}
+  {{- printf "%s-postgresql" (include "warden.fullname" .) -}}
+{{- end -}}
+{{- end }}
+
+{{/*
 Whether the chart needs to create a Secret resource.
 */}}
 {{- define "warden.createSecret" -}}
