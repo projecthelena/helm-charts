@@ -37,7 +37,7 @@ database:
     enabled: true
     auth:
       username: warden
-      password: "my-secret-password"
+      password: "my-secret-password"  # auto-generated if omitted
       database: warden
     persistence:
       enabled: true

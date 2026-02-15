@@ -2,7 +2,7 @@ apiVersion: v2
 name: warden
 description: Helm chart for Warden — open-source uptime monitoring built in Go
 type: application
-version: 0.2.2
+version: 0.2.3
 appVersion: "0.1.0"
 icon: https://raw.githubusercontent.com/projecthelena/charts/main/assets/icon.png
 home: https://github.com/projecthelena/helm-charts
