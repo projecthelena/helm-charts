@@ -95,6 +95,9 @@ database:
     auth:
       username: warden
       # Auto-generated if empty and no existingSecret is provided.
+      # ArgoCD users: you MUST either set an explicit password here or
+      # configure ignoreDifferences + RespectIgnoreDifferences on the
+      # Application (see argocd section below in this file).
       # Avoid URL-unsafe characters (@, :, /, ?, #) as the value is
       # embedded in a postgres:// connection string.
       password: ""
@@ -148,3 +151,17 @@ readinessProbe:
   timeoutSeconds: 3
   failureThreshold: 3
   successThreshold: 1
+
+# -- ArgoCD: when using the auto-generated PostgreSQL password, add this
+# to your ArgoCD Application spec so the password is not overwritten on
+# every sync:
+#
+#   spec:
+#     ignoreDifferences:
+#       - kind: Secret
+#         name: <release>-warden-postgresql
+#         jsonPointers:
+#           - /data
+#     syncPolicy:
+#       syncOptions:
+#         - RespectIgnoreDifferences=true

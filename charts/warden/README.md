@@ -138,6 +138,43 @@ ingressRoute:
     certResolver: letsencrypt
 ```
 
+## ArgoCD
+
+When using the internal PostgreSQL with an auto-generated password, ArgoCD will
+regenerate a new random password on every sync because the Helm `lookup`
+function is disabled in ArgoCD's repo-server. To prevent this, configure your
+ArgoCD Application to ignore differences on the PostgreSQL secret:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+spec:
+  # ... your existing spec ...
+  ignoreDifferences:
+    - kind: Secret
+      name: <release>-warden-postgresql
+      jsonPointers:
+        - /data
+  syncPolicy:
+    syncOptions:
+      - RespectIgnoreDifferences=true
+```
+
+Replace `<release>` with your Helm release name. This ensures the password
+created on first sync is preserved on all subsequent syncs.
+
+Alternatively, set an explicit password or use an externally managed secret to
+avoid the issue entirely:
+
+```yaml
+database:
+  postgres:
+    auth:
+      password: "my-stable-password"
+      # -- or --
+      existingSecret: my-pg-credentials
+```
+
 ## Key Values
 
 | Value | Description | Default |
