@@ -133,6 +133,19 @@
       },
       "additionalProperties": false
     },
+    "observability": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        }
+      },
+      "required": ["enabled", "port"],
+      "additionalProperties": false
+    },
     "adminSecret": { "type": "string" },
     "database": {
       "type": "object",
@@ -191,6 +204,7 @@
               "additionalProperties": false
             },
             "resources": { "type": "object" },
+            "nodeSelector": { "$ref": "#/definitions/labelMap" },
             "service": {
               "type": "object",
               "properties": {

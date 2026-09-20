@@ -69,6 +69,11 @@ config:
   cookieSecure: false
   trustProxy: false
 
+# Private Prometheus metrics and Go profiling listener. Do not expose this port through ingress.
+observability:
+  enabled: false
+  port: 9091
+
 # Secret for initial setup — avoid in production
 adminSecret: ""
 
@@ -117,6 +122,7 @@ database:
       limits:
         cpu: 500m
         memory: 512Mi
+    nodeSelector: {}
     service:
       port: 5432
 
