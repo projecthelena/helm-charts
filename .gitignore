@@ -15,3 +15,7 @@ charts/**/charts/
 charts/**/tmp/
 charts/**/.helmcache/
 charts/**/.helm/
+
+# Published chart packages
+dist/
+__pycache__/

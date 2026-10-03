@@ -1,12 +1,13 @@
 apiVersion: v2
 name: warden
-description: Helm chart for Warden — open-source uptime monitoring built in Go
+description: Uptime monitoring with adaptive latency alerts and status pages
 type: application
-version: 0.3.0
-appVersion: "0.1.0"
-icon: https://raw.githubusercontent.com/projecthelena/charts/main/assets/icon.png
-home: https://github.com/projecthelena/helm-charts
+version: 0.3.1
+appVersion: "0.8.0"
+icon: https://raw.githubusercontent.com/projecthelena/warden/main/assets/favicon.svg
+home: https://github.com/projecthelena/warden
 sources:
+  - https://github.com/projecthelena/warden
   - https://github.com/projecthelena/helm-charts
 keywords:
   - monitoring
@@ -16,3 +17,11 @@ keywords:
 maintainers:
   - name: Project Helena
     email: jesus@projecthelena.com
+annotations:
+  artifacthub.io/category: monitoring-logging
+  artifacthub.io/license: Apache-2.0
+  artifacthub.io/links: |
+    - name: support
+      url: https://github.com/projecthelena/warden/issues
+    - name: Documentation
+      url: https://github.com/projecthelena/warden/tree/main/docs

@@ -1,14 +1,20 @@
 # Warden Chart
 
-Helm chart for deploying Warden — open-source uptime monitoring built in Go. Multi-zone checks, status pages, unlimited team members. Part of the Project Helena ecosystem.
+Deploy Warden on Kubernetes to monitor HTTP, TCP, ICMP, and DNS services with adaptive latency alerts and status pages. Use SQLite or PostgreSQL for storage.
 
 ## Installation
 
 ```sh
-helm install warden charts/warden --namespace warden --create-namespace
+helm repo add projecthelena https://charts.projecthelena.com
+helm repo update
+helm install warden projecthelena/warden --namespace warden --create-namespace
 ```
 
-Use `-f my-values.yaml` or `--set key=value` to override defaults.
+Use `-f my-values.yaml` or `--set key=value` to override defaults. The default image is pinned to a stable Warden release.
+
+For reproducible installs, choose a chart version with `helm search repo projecthelena/warden --versions` and pass `--version <chart-version>` to `helm install` or `helm upgrade`. The chart version and Warden application version are independent.
+
+After installation, run `kubectl port-forward --namespace warden service/warden 9090:9090` and open `http://localhost:9090` to create the first administrator. For an HTTPS ingress, set `config.cookieSecure=true`; enable `config.trustProxy` only behind a trusted proxy.
 
 ## Database Modes
 
@@ -180,7 +186,7 @@ database:
 | Value | Description | Default |
 | --- | --- | --- |
 | `replicaCount` | Number of warden pods (ignored for SQLite) | `1` |
-| `image.repository` / `image.tag` | Container image reference | `ghcr.io/projecthelena/warden:latest` |
+| `image.repository` / `image.tag` | Container image reference | See `image` in `values.yaml` for the pinned release |
 | `service.type` | Kubernetes Service type | `ClusterIP` |
 | `service.port` | Service port | `9090` |
 | `config.listenAddr` | App bind address | `":9090"` |
