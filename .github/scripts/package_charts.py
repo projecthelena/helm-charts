@@ -25,6 +25,10 @@ def main():
     if dist.exists() and any(dist.iterdir()):
         raise RuntimeError('dist must be empty before packaging')
     dist.mkdir(exist_ok=True)
+    retired_path = Path('retired-packages.json')
+    retired = json.loads(retired_path.read_text()) if retired_path.exists() else []
+    if any(Path(name).name != name or not name.endswith('.tgz') for name in retired):
+        raise RuntimeError('Retired packages must be .tgz filenames')
     # Cloudflare Pages replaces the deployment, so keep every published package.
     with tempfile.TemporaryDirectory() as temp:
         config = str(Path(temp) / 'repositories.yaml')
@@ -36,6 +40,11 @@ def main():
             raise RuntimeError('Published repository is empty; refusing to discard chart history')
         for package in packages:
             run('helm', 'pull', package['name'], '--version', package['version'], '--destination', str(dist), *flags)
+        # Retired archives stay downloadable even after leaving the public index.
+        for name in retired:
+            if not (dist / name).exists():
+                run('helm', 'pull', args.repository_url.rstrip('/') + '/' + name,
+                    '--destination', str(dist), *flags)
         for chart in sorted(Path('charts').iterdir()):
             if not (chart / 'Chart.yaml').is_file():
                 continue
@@ -47,7 +56,13 @@ def main():
                     raise RuntimeError(f'{package.name} already exists with different contents; bump the chart version')
             else:
                 package.replace(target)
-    run('helm', 'repo', 'index', str(dist))
+        hidden = Path(temp) / 'retired'
+        hidden.mkdir()
+        for name in retired:
+            (dist / name).replace(hidden / name)
+        run('helm', 'repo', 'index', str(dist))
+        for package in hidden.iterdir():
+            package.replace(dist / package.name)
 
 
 if __name__ == '__main__':

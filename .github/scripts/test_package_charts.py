@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import functools
 import http.server
+import json
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -77,6 +79,27 @@ class PublishingTests(unittest.TestCase):
         result = self.publish()
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('bump the chart version', result.stderr)
+        self.assertFalse((self.work / 'dist' / 'index.yaml').exists())
+
+    def test_retired_archive_survives_two_publications_without_index_entry(self):
+        self.write_chart('0.2.0')
+        retired = 'example-0.1.0.tgz'
+        (self.work / 'retired-packages.json').write_text(json.dumps([retired]))
+        for _ in range(2):
+            result = self.publish()
+            self.assertEqual(result.returncode, 0, result.stderr)
+            dist = self.work / 'dist'
+            self.assertEqual((dist / retired).read_bytes(), self.originals[retired])
+            index = (dist / 'index.yaml').read_text()
+            self.assertNotIn('version: 0.1.0\n', index)
+            self.assertIn('version: 0.2.0', index)
+            shutil.copytree(dist, self.repo, dirs_exist_ok=True)
+            shutil.rmtree(dist)
+
+    def test_missing_retired_archive_stops_publication(self):
+        (self.work / 'retired-packages.json').write_text(json.dumps(['missing-0.1.0.tgz']))
+        result = self.publish()
+        self.assertNotEqual(result.returncode, 0)
         self.assertFalse((self.work / 'dist' / 'index.yaml').exists())
 
     def test_missing_index_stops_publication(self):
