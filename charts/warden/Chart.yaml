@@ -2,10 +2,10 @@ apiVersion: v2
 name: warden
 description: Uptime monitoring with adaptive latency alerts and status pages
 type: application
-version: 0.3.2
+version: 0.3.3
 appVersion: "0.8.0"
 icon: https://raw.githubusercontent.com/projecthelena/warden/main/assets/favicon.svg
-home: https://github.com/projecthelena/warden
+home: https://projecthelena.com/
 sources:
   - https://github.com/projecthelena/warden
   - https://github.com/projecthelena/helm-charts
@@ -17,10 +17,13 @@ keywords:
 maintainers:
   - name: Project Helena
     email: jesus@projecthelena.com
+    url: https://projecthelena.com/
 annotations:
   artifacthub.io/category: monitoring-logging
   artifacthub.io/license: Apache-2.0
   artifacthub.io/links: |
+    - name: Project Helena
+      url: https://projecthelena.com/
     - name: support
       url: https://github.com/projecthelena/warden/issues
     - name: Documentation

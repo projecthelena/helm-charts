@@ -1,6 +1,6 @@
 # Project Helena Helm Charts
 
-Helm charts for deploying the [Project Helena](https://github.com/projecthelena) ecosystem: uptime monitoring and Kubernetes cost visibility.
+Helm charts for deploying the [Project Helena](https://projecthelena.com/) ecosystem: uptime monitoring and Kubernetes cost visibility.
 
 ## Charts
 
