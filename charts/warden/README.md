@@ -4,6 +4,8 @@ Deploy Warden on Kubernetes to monitor HTTP, TCP, ICMP, and DNS services with ad
 
 Run one Warden replica with either database. Each process schedules its own checks, so PostgreSQL does not enable active-active operation. Upgrades use `Recreate` to avoid overlapping schedulers and briefly interrupt checks.
 
+Warden is built by [Project Helena](https://projecthelena.com/). Visit the website for a product overview and updates.
+
 ## Installation
 
 ```sh
