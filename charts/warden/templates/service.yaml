@@ -15,6 +15,7 @@ spec:
   type: {{ .Values.service.type }}
   selector:
     {{- include "warden.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: warden
   ports:
     - name: http
       protocol: TCP

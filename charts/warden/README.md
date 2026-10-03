@@ -1,14 +1,22 @@
 # Warden Chart
 
-Helm chart for deploying Warden — open-source uptime monitoring built in Go. Multi-zone checks, status pages, unlimited team members. Part of the Project Helena ecosystem.
+Deploy Warden on Kubernetes to monitor HTTP, TCP, ICMP, and DNS services with adaptive latency alerts and status pages. Use SQLite or PostgreSQL for storage.
+
+Run one Warden replica with either database. Each process schedules its own checks, so PostgreSQL does not enable active-active operation. Upgrades use `Recreate` to avoid overlapping schedulers and briefly interrupt checks.
 
 ## Installation
 
 ```sh
-helm install warden charts/warden --namespace warden --create-namespace
+helm repo add projecthelena https://charts.projecthelena.com
+helm repo update
+helm install warden projecthelena/warden --namespace warden --create-namespace
 ```
 
-Use `-f my-values.yaml` or `--set key=value` to override defaults.
+Use `-f my-values.yaml` or `--set key=value` to override defaults. The default image is pinned to a stable Warden release.
+
+For reproducible installs, choose a chart version with `helm search repo projecthelena/warden --versions` and pass `--version <chart-version>` to `helm install` or `helm upgrade`. The chart version and Warden application version are independent.
+
+After installation, run `kubectl port-forward --namespace warden service/warden 9090:9090` and open `http://localhost:9090` to create the first administrator. For an HTTPS ingress, set `config.cookieSecure=true`; enable `config.trustProxy` only behind a trusted proxy.
 
 ## Database Modes
 
@@ -28,7 +36,7 @@ database:
 
 ### Internal PostgreSQL
 
-Deploys a PostgreSQL StatefulSet alongside Warden using the official `postgres:18` image.
+Deploys a PostgreSQL StatefulSet alongside Warden using the official `postgres:18` image. Enable either internal or external PostgreSQL, never both.
 
 ```yaml
 database:
@@ -179,10 +187,10 @@ database:
 
 | Value | Description | Default |
 | --- | --- | --- |
-| `replicaCount` | Number of warden pods (ignored for SQLite) | `1` |
-| `image.repository` / `image.tag` | Container image reference | `ghcr.io/projecthelena/warden:latest` |
+| `replicaCount` | Warden replicas (must remain 1) | `1` |
+| `image.repository` / `image.tag` | Container image reference | See `image` in `values.yaml` for the pinned release |
 | `service.type` | Kubernetes Service type | `ClusterIP` |
-| `service.port` | Service port | `9090` |
+| `service.port` | Service port; routes to the port in `config.listenAddr` | `9090` |
 | `config.listenAddr` | App bind address | `":9090"` |
 | `config.cookieSecure` | Set `true` for HTTPS deployments | `false` |
 | `config.trustProxy` | Set `true` behind a reverse proxy | `false` |
@@ -204,3 +212,7 @@ Run the following before opening a PR:
 helm lint charts/warden
 helm template charts/warden | kubectl apply --dry-run=client -f -
 ```
+
+## Observability
+
+Enable `observability.enabled` for the private Prometheus and profiling listener. Its port must differ from the HTTP listener, and the service must use `ClusterIP`. Do not expose this port through an ingress or external load balancer.

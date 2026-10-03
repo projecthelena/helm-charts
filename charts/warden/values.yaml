@@ -1,9 +1,10 @@
+# Warden runs one scheduler per process; multiple replicas are not supported.
 replicaCount: 1
 
 image:
   repository: ghcr.io/projecthelena/warden
-  tag: latest
-  pullPolicy: Always
+  tag: "v0.8.0"
+  pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 nameOverride: ""
@@ -103,8 +104,7 @@ database:
       # ArgoCD users: you MUST either set an explicit password here or
       # configure ignoreDifferences + RespectIgnoreDifferences on the
       # Application (see argocd section below in this file).
-      # Avoid URL-unsafe characters (@, :, /, ?, #) as the value is
-      # embedded in a postgres:// connection string.
+      # Credentials are URL-encoded when building the connection string.
       password: ""
       database: warden
       # Use an existing Secret instead of creating one. The secret must

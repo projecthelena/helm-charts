@@ -17,6 +17,7 @@
 
 ## Testing Guidelines
 - Prefer `helm lint` and `helm template` for validation; add automated tests (e.g., `ct lint`) when the repo grows.
+- Run `python3 .github/scripts/test_warden_chart.py` (requires PyYAML) for Warden configuration changes. It checks database combinations, service selection, ports, credentials, and single-scheduler deployment.
 - Rendered manifests should be Kubernetes-valid; use `kubectl apply --dry-run=client -f <(helm template …)` as an optional smoke test.
 - Test files should mirror chart names; add sample overrides under `charts/<chart>/ci/` if you introduce scenario-specific testing.
 
@@ -29,3 +30,12 @@
 - Never commit secrets; leverage Kubernetes Secrets and reference them via `values.yaml`.
 - Default images should point to trusted registries (`ghcr.io/projecthelena/...`). Bump tags intentionally and document breaking changes.
 - Provide configuration examples for connecting agents (e.g., `values.yaml` `config.agents`) so operators can mirror recommended settings.
+
+## Publishing and Artifact Hub
+
+- Build validation runs on pull requests; only pushes to `main` deploy to Cloudflare Pages. The full workflow is serialized per ref so concurrent builds do not replace a newer deployment with an older one.
+- Keep Helm pinned to the same version as the Warden release workflow. Run `python3 .github/scripts/test_package_charts.py`, `helm lint`, `helm template`, and `actionlint` when changing publishing.
+- `.github/scripts/package_charts.py` requires an empty `dist/` and access to the existing public repository. It preserves old packages, including prereleases, and rejects changes to published versions. Repository download failures must stop publication, never reset history.
+- Register `https://charts.projecthelena.com` once in Artifact Hub. Add its real repository UUID as `repositoryID` in `artifacthub-repo.yml` after registration; never invent an ID. Set the owner email to the address used by the publisher account if ownership claiming is needed.
+- `artifacthub-repo.yml` is copied beside `index.yaml`. Verified publisher status requires a real ID and a subsequent index change. This preparation alone does not register or verify the repository.
+- Chart automation from Warden needs the write-enabled deploy key configured by its PR #103. Merge the chart publication changes before enabling stable-release synchronization. Registration, credential creation, and merges remain separate operations.

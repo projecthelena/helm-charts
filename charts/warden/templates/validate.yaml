@@ -1,0 +1,22 @@
+{{- $httpPort := int (regexFind "[0-9]+$" .Values.config.listenAddr) -}}
+{{- if or (lt $httpPort 1) (gt $httpPort 65535) -}}
+  {{- fail "config.listenAddr must end in a valid TCP port (1-65535)" -}}
+{{- end -}}
+{{- if eq .Values.database.type "postgres" -}}
+  {{- if eq .Values.database.postgres.enabled .Values.database.external.enabled -}}
+    {{- fail "PostgreSQL requires exactly one of database.postgres.enabled or database.external.enabled" -}}
+  {{- end -}}
+  {{- if and .Values.database.external.enabled (not (or .Values.database.external.url .Values.database.external.existingSecret)) -}}
+    {{- fail "External PostgreSQL requires database.external.url or database.external.existingSecret" -}}
+  {{- end -}}
+{{- else if or .Values.database.postgres.enabled .Values.database.external.enabled -}}
+  {{- fail "PostgreSQL settings require database.type=postgres" -}}
+{{- end -}}
+{{- if .Values.observability.enabled -}}
+  {{- if ne .Values.service.type "ClusterIP" -}}
+    {{- fail "Observability requires a ClusterIP service to keep metrics and profiling private" -}}
+  {{- end -}}
+  {{- if eq $httpPort (int .Values.observability.port) -}}
+    {{- fail "observability.port must differ from the HTTP listener port" -}}
+  {{- end -}}
+{{- end -}}

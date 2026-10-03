@@ -8,6 +8,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: helm-charts-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,13 +22,23 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4
+        with:
+          version: v3.22.0
+
+      - name: Test Warden configuration
+        run: |
+          python3 -m pip install --disable-pip-version-check PyYAML==6.0.3
+          python3 .github/scripts/test_warden_chart.py
+
+      - name: Test chart publishing
+        run: python3 .github/scripts/test_package_charts.py
 
       - name: Update chart dependencies
         run: |
           set -euo pipefail
           for chart in charts/*; do
-            helm dependency update "${chart}" 2>/dev/null || true
+            helm dependency build "${chart}"
           done
 
       - name: Lint charts
@@ -43,23 +57,15 @@ jobs:
             helm template preview "${chart}" >/dev/null
           done
 
-      - name: Package charts
-        run: |
-          set -euo pipefail
-          mkdir -p dist
-          for chart in charts/*; do
-            echo "Packaging ${chart}"
-            helm package "${chart}" --destination dist
-          done
-
-      - name: Generate Helm repository index
-        run: helm repo index dist
+      - name: Package charts and preserve published versions
+        run: python3 .github/scripts/package_charts.py
 
       - name: Add landing page assets
         run: |
           cp site/index.html dist/index.html
           cp site/styles.css dist/styles.css
           cp site/favicon.svg dist/favicon.svg
+          cp artifacthub-repo.yml dist/artifacthub-repo.yml
 
       - name: Upload packaged charts artifact
         uses: actions/upload-artifact@v4
