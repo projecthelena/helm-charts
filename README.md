@@ -1,13 +1,11 @@
 # Project Helena Helm Charts
 
-Helm charts for deploying the [Project Helena](https://projecthelena.com/) ecosystem: uptime monitoring and Kubernetes cost visibility.
+Helm charts for deploying the [Project Helena](https://projecthelena.com/) uptime monitoring service.
 
 ## Charts
 
 | Chart | Description |
 | --- | --- |
-| [recon](charts/recon) | Web dashboard that aggregates cost metrics from distributed agents. Includes optional VictoriaMetrics for time-series storage. |
-| [recon-agent](charts/recon-agent) | DaemonSet agent that collects cluster cost data via eBPF and reports to recon over gRPC. |
 | [warden](charts/warden) | Uptime monitoring with adaptive latency alerts and status pages. Supports SQLite and PostgreSQL. |
 
 ## Usage
@@ -22,13 +20,13 @@ helm repo update
 Install a chart:
 
 ```sh
-helm install recon projecthelena/recon --namespace recon --create-namespace
+helm install warden projecthelena/warden --namespace warden --create-namespace
 ```
 
 Or install directly from source:
 
 ```sh
-helm install recon charts/recon --namespace recon --create-namespace
+helm install warden charts/warden --namespace warden --create-namespace
 ```
 
 ## Development
@@ -57,3 +55,9 @@ Chart versions follow semantic versioning independently from application version
 Each deployment keeps the existing chart packages and adds new versions to `index.yaml`. Publishing different contents under an existing chart version fails; increment `version` in `Chart.yaml` when changing a chart. Previously discarded versions cannot be recovered by this pipeline.
 
 Artifact Hub indexes new packages automatically once `https://charts.projecthelena.com` is registered as a Helm repository. It reads the chart description and README from each package.
+
+## Retired packages
+
+Recon and Recon Agent are disabled because their images are unavailable. Their sources live in `archived-charts/` and are excluded from builds. `retired-packages.json` lists archives kept at their original download URLs but excluded from `index.yaml`, including Warden 0.3.0 with its broken logo metadata. Subsequent builds fetch these archives explicitly so retirement never deletes historical downloads. Use Warden 0.3.1 or newer.
+
+The deployed root `404.html` disables Cloudflare Pages SPA fallback: missing files, including optional `.prov` signatures, must return HTTP 404 rather than the landing page with HTTP 200.

@@ -1,13 +1,13 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- `charts/` contains all Helm packages; each chart lives in its own directory (e.g., `charts/recon`, `charts/recon-agent`, `charts/warden`).
+- `charts/` contains active Helm packages; each chart lives in its own directory (e.g., `charts/warden`). Disabled sources live in `archived-charts/`.
 - Each chart follows the Helm layout: `Chart.yaml`, `values.yaml`, and `templates/` with Kubernetes manifests (Deployment, Service, ConfigMap, etc.).
 - Keep chart-specific assets (helpers, notes) inside their chart directory; avoid cross-chart imports.
 
 ## Build, Test, and Development Commands
 - `helm lint charts/<chart-name>`: static validation for a chart; run before every PR.
-- `helm template charts/<chart-name>`: render manifests locally for inspection, e.g., `helm template charts/recon`.
+- `helm template charts/<chart-name>`: render manifests locally for inspection, e.g., `helm template charts/warden`.
 - `helm install <release> charts/<chart-name> --namespace <ns>`: deploy to a cluster; use a sandbox namespace when testing new changes.
 
 ## Coding Style & Naming Conventions
@@ -35,7 +35,9 @@
 
 - Build validation runs on pull requests; only pushes to `main` deploy to Cloudflare Pages. The full workflow is serialized per ref so concurrent builds do not replace a newer deployment with an older one.
 - Keep Helm pinned to the same version as the Warden release workflow. Run `python3 .github/scripts/test_package_charts.py`, `helm lint`, `helm template`, and `actionlint` when changing publishing.
-- `.github/scripts/package_charts.py` requires an empty `dist/` and access to the existing public repository. It preserves old packages, including prereleases, and rejects changes to published versions. Repository download failures must stop publication, never reset history.
+- `.github/scripts/package_charts.py` requires an empty `dist/` and access to the existing public repository. It preserves old packages, including prereleases and retired archives listed in `retired-packages.json`, and rejects changes to published versions. Repository download failures must stop publication, never reset history.
 - Register `https://charts.projecthelena.com` once in Artifact Hub. Add its real repository UUID as `repositoryID` in `artifacthub-repo.yml` after registration; never invent an ID. Set the owner email to the address used by the publisher account if ownership claiming is needed.
 - `artifacthub-repo.yml` is copied beside `index.yaml`. Verified publisher status requires a real ID and a subsequent index change. This preparation alone does not register or verify the repository.
 - Chart automation from Warden needs the write-enabled deploy key configured by its PR #103. Merge the chart publication changes before enabling stable-release synchronization. Registration, credential creation, and merges remain separate operations.
+
+- `archived-charts/` contains disabled charts and is not built. Retired archives stay downloadable but must not appear in `index.yaml`. Always deploy `site/404.html` to the root to prevent HTML fallback for absent `.prov` files.
