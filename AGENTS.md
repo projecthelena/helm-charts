@@ -17,6 +17,7 @@
 
 ## Testing Guidelines
 - Prefer `helm lint` and `helm template` for validation; add automated tests (e.g., `ct lint`) when the repo grows.
+- Run `python3 .github/scripts/test_warden_chart.py` (requires PyYAML) for Warden configuration changes. It checks database combinations, service selection, ports, credentials, and single-scheduler deployment.
 - Rendered manifests should be Kubernetes-valid; use `kubectl apply --dry-run=client -f <(helm template …)` as an optional smoke test.
 - Test files should mirror chart names; add sample overrides under `charts/<chart>/ci/` if you introduce scenario-specific testing.
 

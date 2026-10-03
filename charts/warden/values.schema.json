@@ -5,7 +5,8 @@
   "properties": {
     "replicaCount": {
       "type": "integer",
-      "minimum": 1
+      "minimum": 1,
+      "maximum": 1
     },
     "image": {
       "type": "object",
@@ -127,7 +128,7 @@
     "config": {
       "type": "object",
       "properties": {
-        "listenAddr": { "type": "string" },
+        "listenAddr": { "type": "string", "pattern": ":\\d+$" },
         "cookieSecure": { "type": "boolean" },
         "trustProxy": { "type": "boolean" }
       },
