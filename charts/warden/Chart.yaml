@@ -2,8 +2,8 @@ apiVersion: v2
 name: warden
 description: Uptime monitoring with adaptive latency alerts and status pages
 type: application
-version: 0.3.3
-appVersion: "0.8.0"
+version: 0.3.4
+appVersion: "0.9.0"
 icon: https://raw.githubusercontent.com/projecthelena/warden/main/assets/favicon.svg
 home: https://projecthelena.com/
 sources:
